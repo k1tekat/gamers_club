@@ -119,20 +119,24 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
         indate.seekg(20,ios::beg);
         event_from_file.resize(100);
         int iter = 0;
-        while (iter <= 20)
-        {
-            
-            char time[4];
-            
-            
+        while (iter < 10)
+        {   
+            char time[5];
+
+            indate.read(time,6);
+            // event_from_file[iter].clock.b_hour = time[0]-48;
+            // event_from_file[iter].clock.s_hour = time[1]-48;
+            // event_from_file[iter].clock.b_min = time[3]-48;
+            // event_from_file[iter].clock.s_min = time[4]-48;
         
-            indate.read(time,5);
-            event_from_file[iter].clock.b_hour = time[0]-48;
-            event_from_file[iter].clock.s_hour = time[1]-48;
-            event_from_file[iter].clock.b_min = time[3]-48;
-            event_from_file[iter].clock.s_min = time[4]-48;
-        
-            print_time(event_from_file[iter].clock);
+            // print_time(event_from_file[iter].clock);
+
+            cout<<endl;
+            for (int i = 0; i <=5; i++)
+            {
+                cout<<" "<<time[i]<<" ";
+            }
+            cout<<endl;
 
             indate >> event_from_file[iter].ID;
             cout <<"ID: "<< event_from_file[iter].ID<<endl;
@@ -150,17 +154,8 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
             }
 
             iter++;
-            indate.seekg(2,ios::cur);
-        }
-        
-
-
-
-
-
-
-
-
+            //indate.seekg(2,ios::cur);
+        }        
     }
     else
     {
@@ -174,4 +169,3 @@ void print_time(Clock time)
 {
     cout<<time.b_hour<<time.s_hour<<":"<<time.b_min<<time.s_min<<endl;
 }
-
