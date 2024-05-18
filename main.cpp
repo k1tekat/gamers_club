@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <fstream>
 #include <string>
+#include <queue>
 
 using namespace std;
 
@@ -20,7 +21,7 @@ struct Clock
     // uint8_t b_min;
     // uint8_t s_min;
 
-    int summ_minut = b_hour*600+s_hour*60+b_min*10+s_min;
+    int summ_minut = 0;
 };
 
 struct Gamers_club
@@ -42,50 +43,121 @@ struct Event
 
 struct Table
 {
-    char username[20];
-    int revenue;
+    bool reserv = 0;
+    string username;
+    int revenue; //выручка
     Clock busy_time;
 };
 
 void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_club);
 void print_time(Clock time);
 
+
+
 int main(int argc, char* argv[])
 {
     Gamers_club new_club;
     vector<Event> events;
+    vector<Table> tables;
+
     read_file(argv[1],events,new_club);
+
+    tables.resize(new_club.tables);
+
+    queue<string> user_queue;
 
     cout<<"start working: ";
     print_time(new_club.start_working);
-
     cout<<endl;
+
 
     for(int i = 0; i < events.size(); i++)
     {
 
         print_time(events[i].clock);
-        cout<<events[i].username<<endl;
-        cout<<"ID:"<<events[i].ID<<endl;
+        cout<<"ID:"<<events[i].ID<<" ";
+        cout<<events[i].username<<" ";
+      
 
         if(events[i].ID == 1)
         {
             if(events[i].clock.summ_minut<new_club.start_working.summ_minut)
             {
-                cout<<"NotOpenYet"<<endl;
+                cout<<endl;
+                print_time(events[i].clock);
+                cout<<"NotOpenYet"<<" ";
             }
-
-
-            for(int j = i - 1; j>=0; j--)
+            else
             {
-                if ((events[j].username == events[i].username) && (events[j].ID == 1)) 
+                for(int j = i - 1; j>=0; j--)
                 {
-                    cout<<"YouShallNotPass"<<endl;
-                    j=0;
-                } 
+                    if ((events[j].username == events[i].username) && (events[j].ID == 1) && (events[j].clock.summ_minut>new_club.start_working.summ_minut)) 
+                    {
+                        cout<<endl;
+                        print_time(events[i].clock);
+                        cout<<"YouShallNotPass"<<" ";
+                        j=0;
+                    } 
+                }
             }
+            cout<<endl;
         }
-        cout<<endl;
+
+        if(events[i].ID == 2)
+        {
+
+            if(tables[events[i].table].reserv == 0)
+            {
+                tables[events[i].table].reserv = true;
+                tables[events[i].table].username = events[i].username;
+                tables[events[i].table].busy_time = events[i].clock;
+            }
+            else
+            {
+                cout<<endl;
+                print_time(events[i].clock);
+                cout<<"PlacesBusy"<<" ";
+            }
+            cout<<endl;
+        }
+
+
+
+        if(events[i].ID == 3)
+        {
+            for(int j = 0; j< tables.size();j++)
+            {
+                if(tables[j].reserv == 0)
+                {
+                    cout<<endl;
+                    print_time(events[i].clock);
+                    cout<<"ICanWaitNoLonger!"<<" ";
+                    break;
+                }
+                else
+                {
+                    if(user_queue.size()!=  tables.size())
+                    {
+                        cout<<"      "<<user_queue.size()<<"  ";
+                        user_queue.push(events[i].username);
+                    }
+                    else
+                    {
+                    cout<<endl;
+                    print_time(events[i].clock);
+                    cout<<"ID:11"<<" ";
+                    cout<<events[i].username<<" ";
+                    }
+                    break;
+                }
+            }
+            cout<<endl;
+        }
+
+        if(events[i].ID == 4)
+        {
+            cout<<endl;
+        }
     }
 }
 
@@ -105,7 +177,6 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
         indate.read(working_hours,11);
 
         indate >> init_club.price;
-        //cout<<"price: "<<init_club.price<<"   ";
 
         init_club.start_working.b_hour = working_hours[0]-48;
         init_club.start_working.s_hour = working_hours[1]-48;
@@ -116,6 +187,19 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
         init_club.finish_working.s_hour = working_hours[7]-48;
         init_club.finish_working.b_min = working_hours[9]-48;
         init_club.finish_working.s_min = working_hours[10]-48;
+
+        init_club.start_working.summ_minut = 
+        (init_club.start_working.b_hour*600)+
+        (init_club.start_working.s_hour*60)+
+        (init_club.start_working.b_min*10)+
+        init_club.start_working.s_min;
+
+
+        init_club.finish_working.summ_minut = 
+        (init_club.finish_working.b_hour*600)+
+        (init_club.finish_working.s_hour*60)+
+        (init_club.finish_working.b_min*10)+
+        init_club.finish_working.s_min;
 
         indate.seekg(20,ios::beg);
         event_from_file.resize(14); //ДОБАВИТЬ ИТЕРАТОР ДЛЯ ДИНАМИКИ
@@ -129,16 +213,13 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
             event_from_file[iter].clock.s_hour = time[1]-48;
             event_from_file[iter].clock.b_min = time[3]-48;
             event_from_file[iter].clock.s_min = time[4]-48;
+
+            event_from_file[iter].clock.summ_minut = 
+            (event_from_file[iter].clock.b_hour*600)+
+            (event_from_file[iter].clock.s_hour*60)+
+            (event_from_file[iter].clock.b_min*10)+
+            event_from_file[iter].clock.s_min;
         
-            //print_time(event_from_file[iter].clock);
-
-            // cout<<endl;
-            // for (int i = 0; i <=5; i++)
-            // {
-            //     cout<<" "<<time[i]<<" ";
-            // }
-            // cout<<endl;
-
             indate >> event_from_file[iter].ID;
             //cout <<"ID: "<< event_from_file[iter].ID<<endl;
             indate >> event_from_file[iter].username;
@@ -171,5 +252,5 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
 
 void print_time(Clock time)
 {
-    cout<<time.b_hour<<time.s_hour<<":"<<time.b_min<<time.s_min<<endl;
+    cout<<time.b_hour<<time.s_hour<<":"<<time.b_min<<time.s_min<<" ";
 }
