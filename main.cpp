@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
@@ -34,7 +35,7 @@ struct Event
 {
     Clock clock;
     int ID;
-    char username[20];
+    string username;
     int table = 0;
 
 };
@@ -42,10 +43,10 @@ struct Event
 struct Table
 {
     char username[20];
+    int revenue;
+    Clock busy_time;
 };
 
-
-// время переводить в минуты или секунды и вычитать из большего меньшее
 void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_club);
 void print_time(Clock time);
 
@@ -55,12 +56,37 @@ int main(int argc, char* argv[])
     vector<Event> events;
     read_file(argv[1],events,new_club);
 
-    // cout<<"tables:"<<new_club.tables<<endl;
-    // print_time(new_club.start_working);
-    // print_time(new_club.finish_working);
-    
+    cout<<"start working: ";
+    print_time(new_club.start_working);
+
+    cout<<endl;
+
+    for(int i = 0; i < events.size(); i++)
+    {
+
+        print_time(events[i].clock);
+        cout<<events[i].username<<endl;
+        cout<<"ID:"<<events[i].ID<<endl;
+
+        if(events[i].ID == 1)
+        {
+            if(events[i].clock.summ_minut<new_club.start_working.summ_minut)
+            {
+                cout<<"NotOpenYet"<<endl;
+            }
 
 
+            for(int j = i - 1; j>=0; j--)
+            {
+                if ((events[j].username == events[i].username) && (events[j].ID == 1)) 
+                {
+                    cout<<"YouShallNotPass"<<endl;
+                    j=0;
+                } 
+            }
+        }
+        cout<<endl;
+    }
 }
 
 
@@ -91,70 +117,48 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
         init_club.finish_working.b_min = working_hours[9]-48;
         init_club.finish_working.s_min = working_hours[10]-48;
 
-        //cout<<init_club.start_working.b_hour<<init_club.start_working.s_hour<<":"<<init_club.start_working.b_min<<" "<<init_club.start_working.s_min<<endl;
-        //cout<<(int)working_hours[0]<<" "<<(int)working_hours[1]<<":"<<(int)working_hours[3]<<" "<<(int)working_hours[4]<<endl;
-
-
-        // char time[4];
-        // event_from_file.resize(1);
-        // indate.seekg(20,ios::beg);
-        
-        // indate.read(time,5);
-        // event_from_file[0].clock.b_hour = time[0]-48;
-        // event_from_file[0].clock.s_hour = time[1]-48;
-        // event_from_file[0].clock.b_min = time[3]-48;
-        // event_from_file[0].clock.s_min = time[4]-48;
-        
-        // print_time(event_from_file[0].clock);
-
-        // indate >> event_from_file[0].ID;
-        // cout <<"ID: "<< event_from_file[0].ID<<endl;
-        // indate >> event_from_file[0].username;
-        // cout <<"username: "<< event_from_file[0].username<<endl;
-
-        // if(event_from_file[0].ID == 2)
-        //     indate >> event_from_file[0].table;
-        // cout<< event_from_file[0].table;
-
         indate.seekg(20,ios::beg);
-        event_from_file.resize(100);
+        event_from_file.resize(14); //ДОБАВИТЬ ИТЕРАТОР ДЛЯ ДИНАМИКИ
         int iter = 0;
-        while (iter < 10)
+        while (iter < 14) //ДОБАВИТЬ УСЛОВИЕ 
         {   
             char time[5];
 
             indate.read(time,6);
-            // event_from_file[iter].clock.b_hour = time[0]-48;
-            // event_from_file[iter].clock.s_hour = time[1]-48;
-            // event_from_file[iter].clock.b_min = time[3]-48;
-            // event_from_file[iter].clock.s_min = time[4]-48;
+            event_from_file[iter].clock.b_hour = time[0]-48;
+            event_from_file[iter].clock.s_hour = time[1]-48;
+            event_from_file[iter].clock.b_min = time[3]-48;
+            event_from_file[iter].clock.s_min = time[4]-48;
         
-            // print_time(event_from_file[iter].clock);
+            //print_time(event_from_file[iter].clock);
 
-            cout<<endl;
-            for (int i = 0; i <=5; i++)
-            {
-                cout<<" "<<time[i]<<" ";
-            }
-            cout<<endl;
+            // cout<<endl;
+            // for (int i = 0; i <=5; i++)
+            // {
+            //     cout<<" "<<time[i]<<" ";
+            // }
+            // cout<<endl;
 
             indate >> event_from_file[iter].ID;
-            cout <<"ID: "<< event_from_file[iter].ID<<endl;
+            //cout <<"ID: "<< event_from_file[iter].ID<<endl;
             indate >> event_from_file[iter].username;
-            cout <<"username: "<< event_from_file[iter].username<<endl;
+            //cout <<"username: "<< event_from_file[iter].username<<endl;
+
+
 
             if(event_from_file[iter].ID == 2)
             {
                 indate >> event_from_file[iter].table;
-                cout<<"table: "<< event_from_file[iter].table<<endl;
+                //cout<<"table: "<< event_from_file[iter].table<<endl;
             }
             else
             {
-                cout<<"";
+                //cout<<"";
             }
 
             iter++;
-            //indate.seekg(2,ios::cur);
+            indate.seekg(2,ios::cur);
+            //cout<<endl;
         }        
     }
     else

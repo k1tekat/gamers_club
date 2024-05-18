@@ -5,3 +5,6 @@
 !*/
 main.exe
 .vscode/settings.json
+hello.dat
+.vscode/c_cpp_properties.json
+.vscode/tasks.json
