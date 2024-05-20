@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     {
 
         print_time(events[i].clock);
-        cout<<"ID:"<<events[i].ID<<" ";
+        cout<<""<<events[i].ID<<" ";
         cout<<events[i].username<<" ";
       
 
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
             {
                 cout<<endl;
                 print_time(events[i].clock);
-                cout<<"NotOpenYet"<<" ";
+                cout<<"13 NotOpenYet"<<" ";
             }
             else
             {
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
                     {
                         cout<<endl;
                         print_time(events[i].clock);
-                        cout<<"YouShallNotPass"<<" ";
+                        cout<<"13 YouShallNotPass"<<" ";
                         j=0;
                     } 
                 }
@@ -108,6 +108,7 @@ int main(int argc, char* argv[])
 
         if(events[i].ID == 2)
         {
+            cout<<events[i].table;
             if(tables[events[i].table-1].reserv == 0)
             {
                 tables[events[i].table-1].reserv = true;
@@ -119,7 +120,7 @@ int main(int argc, char* argv[])
             {
                 cout<<endl;
                 print_time(events[i].clock);
-                cout<<"PlacesBusy"<<" ";
+                cout<<"13 PlacesBusy"<<" ";
 
             }
             cout<<endl;
@@ -133,7 +134,7 @@ int main(int argc, char* argv[])
                 {
                     cout<<endl;
                     print_time(events[i].clock);
-                    cout<<"ICanWaitNoLonger!"<<" ";
+                    cout<<"13 ICanWaitNoLonger!"<<" ";
                     break;
                 }
                 else
@@ -146,7 +147,7 @@ int main(int argc, char* argv[])
                     {
                     cout<<endl;
                     print_time(events[i].clock);
-                    cout<<"ID:11"<<" ";
+                    cout<<"11"<<" ";
                     cout<<events[i].username<<" ";
                     }
                     break;
@@ -166,7 +167,7 @@ int main(int argc, char* argv[])
 
                         if(user_queue.size() == 0)
                         {
-                            tables[j].revenue_time.summ_minut = events[i].clock.summ_minut - tables[j].busy_time.summ_minut;
+                            tables[j].revenue_time.summ_minut = tables[j].revenue_time.summ_minut + (events[i].clock.summ_minut - tables[j].busy_time.summ_minut);
                             tables[j].revenue = tables[j].revenue + (int((events[i].clock.summ_minut - tables[j].busy_time.summ_minut)/60)*new_club.price);
                             (events[i].clock.summ_minut - tables[j].busy_time.summ_minut)%60 >0? tables[j].revenue+=10:false;
                             tables[j].reserv=false;
@@ -174,7 +175,7 @@ int main(int argc, char* argv[])
                         }
                         else
                         {
-                            tables[j].revenue_time.summ_minut = events[i].clock.summ_minut - tables[j].busy_time.summ_minut;
+                            tables[j].revenue_time.summ_minut = tables[j].revenue_time.summ_minut + (events[i].clock.summ_minut - tables[j].busy_time.summ_minut);
                             tables[j].revenue = tables[j].revenue + (int((events[i].clock.summ_minut - tables[j].busy_time.summ_minut)/60)*new_club.price);
                             (events[i].clock.summ_minut - tables[j].busy_time.summ_minut)%60 >0? tables[j].revenue+=10:false;
                             tables[j].busy_time.summ_minut = events[i].clock.summ_minut; 
@@ -183,8 +184,8 @@ int main(int argc, char* argv[])
 
                             cout<<endl;
                             print_time(events[i].clock);
-                            cout<<"ID:12"<<" ";
-                            cout<<events[i].username<<" ";
+                            cout<<"12"<<" ";
+                            cout<<events[i].username<<" "<<j+1;
 
                         }
                     }
@@ -196,7 +197,7 @@ int main(int argc, char* argv[])
                     {
                         cout<<endl;
                         print_time(events[i].clock);
-                        cout<<"ClientUnknow"<<" ";
+                        cout<<"13 ClientUnknow"<<" ";
                         break;
                     }
 
@@ -222,19 +223,45 @@ int main(int argc, char* argv[])
             }
 
             sort(last_users.begin(),last_users.end());
+            
 
             for(string j : last_users)
             {
+                if(j != "")
+                {
                 print_time(new_club.finish_working);
-                cout<<"11"<<" ";
+                cout<<"11 ";
                 cout<<j<<endl;
+                }
+
             }
             print_time(new_club.finish_working);
             cout<<endl;
 
+
+
+            for (int j = 0; j < tables.size(); j++)
+            {
+                if(tables[j].reserv != 0)
+                {
+                    
+                    tables[j].revenue_time.summ_minut = new_club.finish_working.summ_minut - tables[j].busy_time.summ_minut;
+                    tables[j].revenue = tables[j].revenue + (int((new_club.finish_working.summ_minut - tables[j].busy_time.summ_minut)/60)*new_club.price);
+                    (new_club.finish_working.summ_minut - tables[j].busy_time.summ_minut)%60 >0? tables[j].revenue+=10:false;
+                    tables[j].reserv=false;
+                    tables[j].username = "";
+                }
+                
+            }
+
             for(int j = 0; j< tables.size();j++)
             {
-                cout<<j+1<<" "<< tables[j].revenue<<" "<<tables[j].revenue_time.summ_minut<<endl;
+                Clock last_time;
+                last_time.b_hour = (tables[j].revenue_time.summ_minut/60)/10;
+                last_time.s_hour = (tables[j].revenue_time.summ_minut/60)%10;
+                last_time.b_min = (tables[j].revenue_time.summ_minut%60)/10;
+                last_time.s_min = (tables[j].revenue_time.summ_minut%60)%10;
+                cout<<j+1<<" "<< tables[j].revenue<<" "<<last_time.b_hour<<last_time.s_hour<<":"<<last_time.b_min<<last_time.s_min<<endl;
             }
 
         }
