@@ -1,6 +1,18 @@
 # gamers_club
 test task for YADRO
 
+# Инструкции по сборке
+
+- g++ main.cpp -o main
+- ./main incoming\ data.txt
+
+
+
+
+
+
+
+
 ## Требования к решению
 
 C++:
