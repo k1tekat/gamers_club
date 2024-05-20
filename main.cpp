@@ -43,14 +43,18 @@ struct Event
 
 struct Table
 {
-    bool reserv = 0;
+    bool reserv = false;
     string username;
     int revenue; //выручка
     Clock busy_time;
+    Clock revenue_time;
 };
 
 void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_club);
 void print_time(Clock time);
+bool find_user(string username, queue<string> user_queue);
+
+
 
 
 
@@ -64,9 +68,8 @@ int main(int argc, char* argv[])
 
     tables.resize(new_club.tables);
 
-    queue<string> user_queue;
+    queue<string> user_queue; 
 
-    cout<<"start working: ";
     print_time(new_club.start_working);
     cout<<endl;
 
@@ -105,23 +108,22 @@ int main(int argc, char* argv[])
 
         if(events[i].ID == 2)
         {
-
-            if(tables[events[i].table].reserv == 0)
+            if(tables[events[i].table-1].reserv == 0)
             {
-                tables[events[i].table].reserv = true;
-                tables[events[i].table].username = events[i].username;
-                tables[events[i].table].busy_time = events[i].clock;
+                tables[events[i].table-1].reserv = true;
+                tables[events[i].table-1].username = events[i].username;
+                tables[events[i].table-1].busy_time.summ_minut = events[i].clock.summ_minut;  
+
             }
             else
             {
                 cout<<endl;
                 print_time(events[i].clock);
                 cout<<"PlacesBusy"<<" ";
+
             }
             cout<<endl;
         }
-
-
 
         if(events[i].ID == 3)
         {
@@ -138,7 +140,6 @@ int main(int argc, char* argv[])
                 {
                     if(user_queue.size()!=  tables.size())
                     {
-                        cout<<"      "<<user_queue.size()<<"  ";
                         user_queue.push(events[i].username);
                     }
                     else
@@ -156,10 +157,100 @@ int main(int argc, char* argv[])
 
         if(events[i].ID == 4)
         {
+            for(int j = 0; j < tables.size(); j++)
+            {
+                if ((events[i].username == tables[j].username) || (find_user(events[i].username,user_queue)))
+                {
+                    if(events[i].username == tables[j].username)
+                    {
+
+                        if(user_queue.size() == 0)
+                        {
+                            tables[j].revenue_time.summ_minut = events[i].clock.summ_minut - tables[j].busy_time.summ_minut;
+                            tables[j].revenue = tables[j].revenue + (int((events[i].clock.summ_minut - tables[j].busy_time.summ_minut)/60)*new_club.price);
+                            (events[i].clock.summ_minut - tables[j].busy_time.summ_minut)%60 >0? tables[j].revenue+=10:false;
+                            tables[j].reserv=false;
+                            tables[j].username = "";
+                        }
+                        else
+                        {
+                            tables[j].revenue_time.summ_minut = events[i].clock.summ_minut - tables[j].busy_time.summ_minut;
+                            tables[j].revenue = tables[j].revenue + (int((events[i].clock.summ_minut - tables[j].busy_time.summ_minut)/60)*new_club.price);
+                            (events[i].clock.summ_minut - tables[j].busy_time.summ_minut)%60 >0? tables[j].revenue+=10:false;
+                            tables[j].busy_time.summ_minut = events[i].clock.summ_minut; 
+                            tables[j].username = user_queue.front();
+                            user_queue.pop();
+
+                            cout<<endl;
+                            print_time(events[i].clock);
+                            cout<<"ID:12"<<" ";
+                            cout<<events[i].username<<" ";
+
+                        }
+                    }
+                    break;
+                }
+                else
+                {
+                    if(j == tables.size()-1)
+                    {
+                        cout<<endl;
+                        print_time(events[i].clock);
+                        cout<<"ClientUnknow"<<" ";
+                        break;
+                    }
+
+                }
+            }
             cout<<endl;
         }
+
+        if (i == events.size()-1)
+        {
+            vector<string> last_users;
+            last_users.resize(new_club.tables);
+
+            for(int j = 0; j< tables.size();j++)
+            {
+                last_users[j] = tables[j].username;
+            }
+
+            while (!user_queue.empty())
+            {
+                last_users.push_back(user_queue.front());
+                user_queue.pop();
+            }
+
+            sort(last_users.begin(),last_users.end());
+
+            for(string j : last_users)
+            {
+                print_time(new_club.finish_working);
+                cout<<"11"<<" ";
+                cout<<j<<endl;
+            }
+            print_time(new_club.finish_working);
+            cout<<endl;
+
+            for(int j = 0; j< tables.size();j++)
+            {
+                cout<<j+1<<" "<< tables[j].revenue<<" "<<tables[j].revenue_time.summ_minut<<endl;
+            }
+
+        }
+        
+    
     }
 }
+
+bool find_user(string username, queue<string> user_queue)
+{
+    bool buf;
+    username == user_queue.front() ? buf = true:buf = false;
+    return buf;
+}
+
+
 
 
 void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_club)
