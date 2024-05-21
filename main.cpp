@@ -73,7 +73,6 @@ int main(int argc, char* argv[])
     print_time(new_club.start_working);
     cout<<endl;
 
-
     for(int i = 0; i < events.size(); i++)
     {
 
@@ -320,17 +319,88 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
         init_club.finish_working.s_min;
 
         indate.seekg(20,ios::beg);
-        event_from_file.resize(14); //ДОБАВИТЬ ИТЕРАТОР ДЛЯ ДИНАМИКИ
+        ; //ДОБАВИТЬ ИТЕРАТОР ДЛЯ ДИНАМИКИ
         int iter = 0;
-        while (iter < 14) //ДОБАВИТЬ УСЛОВИЕ 
-        {   
+        while (!indate.eof()) //ДОБАВИТЬ УСЛОВИЕ 
+        {
+            string str;
+            getline(indate,str);
+            //cout<<str<<endl;
+            event_from_file.resize(iter+1);
+            
             char time[5];
 
-            indate.read(time,6);
+            //indate.read(time,6);
+            for(int j = 0; j<sizeof(time);j++)
+                time[j] = str[j];
+            
             event_from_file[iter].clock.b_hour = time[0]-48;
             event_from_file[iter].clock.s_hour = time[1]-48;
             event_from_file[iter].clock.b_min = time[3]-48;
             event_from_file[iter].clock.s_min = time[4]-48;
+
+            if ((event_from_file[iter].clock.b_hour == 0)||
+            (event_from_file[iter].clock.b_hour == 1)||
+            (event_from_file[iter].clock.b_hour == 2))
+            {
+                if((event_from_file[iter].clock.s_hour == 0)||
+                (event_from_file[iter].clock.s_hour == 1)||
+                (event_from_file[iter].clock.s_hour == 2)||
+                (event_from_file[iter].clock.s_hour == 3)||
+                (event_from_file[iter].clock.s_hour == 4)||
+                (event_from_file[iter].clock.s_hour == 5)||
+                (event_from_file[iter].clock.s_hour == 6)||
+                (event_from_file[iter].clock.s_hour == 7)||
+                (event_from_file[iter].clock.s_hour == 8)||
+                (event_from_file[iter].clock.s_hour == 9))
+                {
+                    if((event_from_file[iter].clock.b_min == 0)||
+                    (event_from_file[iter].clock.b_min == 1)||
+                    (event_from_file[iter].clock.b_min == 2)||
+                    (event_from_file[iter].clock.b_min == 3)||
+                    (event_from_file[iter].clock.b_min == 4)||
+                    (event_from_file[iter].clock.b_min == 5)||
+                    (event_from_file[iter].clock.b_min == 6))
+                    {
+                        if((event_from_file[iter].clock.s_hour == 0)||
+                        (event_from_file[iter].clock.s_hour == 1)||
+                        (event_from_file[iter].clock.s_hour == 2)||
+                        (event_from_file[iter].clock.s_hour == 3)||
+                        (event_from_file[iter].clock.s_hour == 4)||
+                        (event_from_file[iter].clock.s_hour == 5)||
+                        (event_from_file[iter].clock.s_hour == 6)||
+                        (event_from_file[iter].clock.s_hour == 7)||
+                        (event_from_file[iter].clock.s_hour == 8)||
+                        (event_from_file[iter].clock.s_hour == 9))
+                        {
+                            
+                        }
+                        else
+                        {
+                            cout<<"Warning, bad format in: "<<iter+4<<","<<4<<endl;
+                            break;
+                        }
+                        
+                    }
+                    else
+                    {
+                        cout<<"Warning, bad format in: "<<iter+4<<","<<3<<endl;
+                        break;
+                    }
+                }
+                else
+                {
+                    cout<<"Warning, bad format in: "<<iter+4<<","<<1<<endl;
+                break;
+                }
+
+            }
+            else
+            {
+                cout<<"Warning, bad format in: "<<iter+4<<","<<0<<endl;
+                break;
+            }
+            
 
             event_from_file[iter].clock.summ_minut = 
             (event_from_file[iter].clock.b_hour*600)+
@@ -338,27 +408,44 @@ void read_file(string filename,vector<Event>& event_from_file,Gamers_club& init_
             (event_from_file[iter].clock.b_min*10)+
             event_from_file[iter].clock.s_min;
         
-            indate >> event_from_file[iter].ID;
+            //indate >> event_from_file[iter].ID;
+            event_from_file[iter].ID =str[6]-48;
             //cout <<"ID: "<< event_from_file[iter].ID<<endl;
-            indate >> event_from_file[iter].username;
+            //indate >> event_from_file[iter].username;            
+            
+            //event_from_file[iter].username = buf;
             //cout <<"username: "<< event_from_file[iter].username<<endl;
+            //print_time(event_from_file[iter].clock);
+            //cout<<endl;
 
-
+            // if(str[str.size()] == "\n")// ДОПИСАТЬ ОБРАБОТКУ ПОСЛЕДНЕЙ СТРОКИ
+            // {
+                
+            // }
 
             if(event_from_file[iter].ID == 2)
             {
-                indate >> event_from_file[iter].table;
+                event_from_file[iter].username.append(str,8,str.size()-11);
+                //cout <<"username: "<< event_from_file[iter].username<<endl;
+                event_from_file[iter].table = str[str.size()-2]-48;
+                //cout<<"\n"<<str[str.size()-2]<<" "<<str.size()<<endl;
+                //indate >> event_from_file[iter].table;
                 //cout<<"table: "<< event_from_file[iter].table<<endl;
             }
             else
             {
+                
+                event_from_file[iter].username.append(str,8,str.size()-9);
+                //cout <<"username: "<< event_from_file[iter].username<<endl;
                 //cout<<"";
             }
+            //cout<<endl;
 
             iter++;
-            indate.seekg(2,ios::cur);
-            //cout<<endl;
-        }        
+            //indate.seekg(2,ios::cur);
+           
+        }
+               
     }
     else
     {
