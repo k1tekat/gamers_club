@@ -6,7 +6,19 @@ test task for YADRO
 - g++ main.cpp -o main
 - ./main incoming\ data.txt
 
-
+# Пример работы программы:
+## Входной файл и результат, выведенный в консоль.
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/fc34c515-8be1-46b9-9f57-7f4c269073b9)
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/603ea973-e9d6-48bf-9a7c-2ae5cf119a41)
+## Входной файл и результат, выведенный в консоль.
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/37647afd-db7f-42c8-9d82-3665f9527a60)
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/7186d126-6469-48cb-9942-0bb299058486)
+## Входной файл и результат, выведенный в консоль.
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/d0a9b54f-a718-4b35-8cb7-547b648b2a97)
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/8b0cf4da-2bb7-4798-827c-43f8a01c1919)
+## Входной файл и результат, выведенный в консоль.
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/dfe4abda-721b-4128-b613-1a35643b5e9f)
+![image](https://github.com/k1tekat/gamers_club/assets/70479216/c2beecdd-e260-42b5-b167-74bf8c63973e)
 
 
 
